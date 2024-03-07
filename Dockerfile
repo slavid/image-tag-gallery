@@ -17,9 +17,9 @@ RUN addgroup \
     --uid "$UID" \
     $USER
 
-USER docker
-
 WORKDIR /usr/src/app
+
+RUN chown -R docker:docker /usr/src/app
 
 COPY --chown=docker:docker app.py .
 COPY --chown=docker:docker requirements.txt .
@@ -27,6 +27,7 @@ COPY --chown=docker:docker templates ./templates
 
 # RUN python3 -m venv .venv
 # RUN . .venv/bin/activate
+USER docker
 
 RUN pip3 install -r requirements.txt
 
@@ -35,7 +36,5 @@ RUN flask db migrate
 RUN flask db upgrade
 
 EXPOSE 5000
-
-# RUN chown -R docker:docker /usr/src/app
 
 CMD [ "flask", "run", "--host=0.0.0.0", "--port=5000"]
