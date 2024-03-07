@@ -13,14 +13,9 @@ RUN adduser $USER sudo
 
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-USER $USER
+WORKDIR /usr/src/app
 
-# WORKDIR /usr/src/app
-RUN mkdir /home/$USER/app
-
-WORKDIR /home/$USER/app/
-
-# RUN chown -R docker:docker /usr/src/app
+RUN chown -R $USER:$USER /usr/src/app
 
 COPY --chown=$USER:$USER app.py .
 COPY --chown=$USER:$USER requirements.txt .
@@ -33,9 +28,15 @@ RUN sudo pip3 install -r requirements.txt
 
 # USER docker
 
+RUN chown -R $USER:$USER /usr/src/app
+
 RUN sudo flask db init
 RUN sudo flask db migrate
 RUN sudo flask db upgrade
+
+RUN chown -R $USER:$USER /usr/src/app
+
+USER $USER
 
 EXPOSE 5000
 
