@@ -1,9 +1,21 @@
 FROM python:3-alpine
 
-#ENV GID 1000
-#ENV UID 1000
+ENV GID 1000
+ENV UID 1000
+ENV USER=docker
+ENV GROUPNAME=$USER
 
-#USER ${UID}:${GID}
+RUN addgroup \
+    --gid "$GID" \
+    "$GROUPNAME" \
+&&  adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "$(pwd)" \
+    --ingroup "$GROUPNAME" \
+    --no-create-home \
+    --uid "$UID" \
+    $USER
 
 WORKDIR /usr/src/app
 
@@ -22,6 +34,6 @@ RUN flask db upgrade
 
 EXPOSE 5000
 
-VOLUME ["/usr/src/app"]
+RUN chown -R docker:docker /usr/src/app
 
 CMD [ "flask", "run", "--host=0.0.0.0", "--port=5000"]
