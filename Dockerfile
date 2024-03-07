@@ -1,39 +1,41 @@
-FROM python:3-alpine
+FROM python:3.12-slim-bookworm
 
 ENV GID 1000
 ENV UID 1000
 ENV USER=docker
 ENV GROUPNAME=$USER
 
-RUN addgroup \
-    --gid "$GID" \
-    "$GROUPNAME" \
-&&  adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "$(pwd)" \
-    --ingroup "$GROUPNAME" \
-    --no-create-home \
-    --uid "$UID" \
-    $USER
+RUN apt-get update \
+ && apt-get install -y sudo
 
-WORKDIR /usr/src/app
+RUN adduser --disabled-password --gecos '' $USER
+RUN adduser $USER sudo
 
-RUN chown -R docker:docker /usr/src/app
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-COPY --chown=docker:docker app.py .
-COPY --chown=docker:docker requirements.txt .
-COPY --chown=docker:docker templates ./templates
+USER $USER
 
-# RUN python3 -m venv .venv
-# RUN . .venv/bin/activate
-USER docker
+# WORKDIR /usr/src/app
+RUN mkdir /home/$USER/app
 
-RUN pip3 install -r requirements.txt
+WORKDIR /home/$USER/app/
 
-RUN flask db init
-RUN flask db migrate
-RUN flask db upgrade
+# RUN chown -R docker:docker /usr/src/app
+
+COPY --chown=$USER:$USER app.py .
+COPY --chown=$USER:$USER requirements.txt .
+COPY --chown=$USER:$USER templates ./templates
+
+#RUN python3 -m venv .venv
+#RUN . .venv/bin/activate
+
+RUN sudo pip3 install -r requirements.txt
+
+# USER docker
+
+RUN sudo flask db init
+RUN sudo flask db migrate
+RUN sudo flask db upgrade
 
 EXPOSE 5000
 
