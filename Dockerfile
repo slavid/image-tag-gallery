@@ -5,8 +5,6 @@ FROM python:3-alpine
 
 #USER ${UID}:${GID}
 
-VOLUME ["/usr/src/app"]
-
 WORKDIR /usr/src/app
 
 COPY app.py .
@@ -24,6 +22,6 @@ RUN flask db upgrade
 
 EXPOSE 5000
 
-
+VOLUME ["/usr/src/app"]
 
 CMD [ "flask", "run", "--host=0.0.0.0", "--port=5000"]
