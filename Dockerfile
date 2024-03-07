@@ -1,11 +1,14 @@
 FROM python:3-alpine
 
-ENV GID 1000
-ENV UID 1000
+#ENV GID 1000
+#ENV UID 1000
 
-USER ${UID}:${GID}
+#USER ${UID}:${GID}
+
+VOLUME ["/usr/src/app"]
 
 WORKDIR /usr/src/app
+
 COPY app.py .
 COPY requirements.txt .
 COPY templates ./templates
@@ -20,5 +23,7 @@ RUN flask db migrate
 RUN flask db upgrade
 
 EXPOSE 5000
+
+
 
 CMD [ "flask", "run", "--host=0.0.0.0", "--port=5000"]
