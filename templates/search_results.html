@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Enlace al archivo CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Enlazar tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Search Results</title>
+
+    {% include 'navbar.html' %}
+
+</head>
+<body>
+
+    <h1>Search Results</h1>
+
+    {% if images %}
+    <h2>Imágenes para los siguientes tags:</h2>
+    <ul>
+        {% for tag in tags %}
+            <a href="{{ url_for('search_by_tag', tag=tag) }}">{{ tag }}</a>
+        {% endfor %}
+    </ul>
+    <h3>Resultados:</h3>
+    <ul>
+        {% for image in images %}
+            <a href="{{ url_for('show_image', image_id=image.id) }}">
+                <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="Imagen" style="max-width: 300px; max-height: 300px;">
+            </a>
+        {% endfor %}
+    </ul>
+{% elif error_message %}
+    <p>{{ error_message }}</p>
+{% else %}
+    <p>No se proporcionó ningún tag válido.</p>
+{% endif %}
+</body>
+</html>

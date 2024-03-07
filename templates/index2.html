@@ -1,0 +1,82 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Gifs grachochos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <h1>Image Hosting App</h1>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*,video/*" required>
+        <input type="text" name="tags" placeholder="Etiquetas separadas por comas">
+        <button type="submit">Subir</button>
+    </form>
+
+    <hr>
+
+    <form action="/search" method="get">
+        <input type="text" name="tag" placeholder="Buscar por etiqueta">
+        <button type="submit">Buscar</button>
+    </form>
+    <p>
+    <!-- Enlace para acceder a la galería -->
+    <a href="{{ url_for('gallery') }}">Ver Galería</a>
+
+    <h2>Lista de tags con imágenes asociadas:</h2>
+    <ul>
+        {% for tag in tags_with_images %}
+        <li>
+            <a href="{{ url_for('search_by_tag', tag=tag.name) }}">{{ tag.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <!-- Sección de tags sin imagenes -->
+    {% if tags_without_images %}
+    <h2>Lista de tags sin imágenes asociadas:</h2>
+    <ul>
+        {% for tag in tags_without_images %}
+            <span class="tag-name">{{ tag.name }}</span>
+            <form action="{{ url_for('delete_tag') }}" method="post">
+                <input type="hidden" name="tag_name" value="{{ tag.name }}">
+                <button type="submit" class="delete-tag-btn">x</button>
+            </form>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- Sección de imágenes sin tags -->
+    {% if images_without_tags %}
+    <h2 style="display: inline-block;">Images Without Tags</h2>
+    <form action="{{ url_for('images_without_tags') }}" method="get" style="display: inline-block;">
+        <button type="submit" class="btn btn-primary">View</button>
+    </form>
+    {% endif %}
+
+
+    
+ 
+    <script>
+        window.onload = function() {
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    alert("{{ messages[0] }}");
+                {% endif %}
+            {% endwith %}
+        }
+        // Este código se asegura de que el botón "x" esté a la derecha del nombre del tag
+        $('.delete-tag-btn').each(function() {
+            var $form = $(this).closest('form');
+            var $span = $form.siblings('.tag-name');
+            $(this).detach().appendTo($span);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Enlace al archivo CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Enlazar tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <title>Imagen Ampliada</title>
+
+    {% include 'navbar.html' %}
+
+</head>
+<body>
+
+
+    <h1>Imagen Ampliada</h1>
+    <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="Imagen Ampliada" style="max-width: 1300px; max-height: 1300px;">
+    
+    <form action="{{ url_for('delete_image') }}" method="post">
+        <input type="hidden" name="image_id" value="{{ image.id }}">
+        <button type="submit" class="btn btn-primary">Eliminar imagen</button>
+    </form>
+    
+    <h2>URL de la Imagen:</h2>
+    {% if image.url %}
+        <form id="update-url-form">
+            <input type="text" id="image-url" value="{{ image.url }}">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <button id="copy-url-btn">Copiar URL</button>
+    {% else %}
+        <form action="{{ url_for('add_url_to_image', image_id=image.id) }}" method="post">
+            <input type="text" name="new_url" placeholder="Introducir URL">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    {% endif %}
+
+    <h2>Añadir Tag:</h2>
+    <form action="{{ url_for('add_tag_to_image', image_id=image.id) }}" method="post">
+        <input type="text" name="new_tag" placeholder="Nuevo Tag">
+        <button type="submit" class="btn btn-primary">Añadir</button>
+    </form>
+
+    <h2>Tags:</h2>
+    <ul>
+        {% for tag in tags %}
+        <li class="list-group-item">
+            <a href="{{ url_for('search_by_tag', tag=tag) }}">{{ tag }}</a>
+            <span>{{ tag.name }}</span>
+            <!-- Botón "x" para eliminar el tag -->
+            <button type="submit" class="btn btn-primary btn-sm delete-tag-btn" data-image-id="{{ image.id }}" data-tag-name="{{ tag }}">Borrar Tag</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Manejar clics en los botones "x"
+            $('.delete-tag-btn').click(function() {
+                // Obtener el ID del tag asociado al botón clicado
+                var tagName = $(this).data('tag-name');
+                // Obtener el ID de la imagen asociada al botón clicado
+                var imageId = $(this).data('image-id');
+                // Enviar una solicitud al servidor para eliminar el tag
+                $.post('/delete_image_tag', { tag_name: tagName, image_id: imageId }, function(data) {
+                    // Recargar la página después de eliminar el tag
+                    location.reload();
+                });
+            });
+    
+            // Manejar la copia de URL al portapapeles
+            $('#copy-url-btn').click(function() {
+                var urlInput = document.getElementById('image-url');
+                // Seleccionar el texto dentro del campo de entrada de la URL
+                urlInput.select();
+    
+                try {
+                    // Intentar copiar el texto seleccionado al portapapeles
+                    var successful = document.execCommand('copy');
+                    var message = successful ? 'URL copiada al portapapeles' : 'Error al copiar URL al portapapeles';
+                    console.log(message);
+                } catch (error) {
+                    console.error('Error al copiar URL al portapapeles:', error);
+                }
+            });
+    
+            // Manejar la actualización de la URL de la imagen
+            $('#update-url-form').submit(function(event) {
+                event.preventDefault();
+                var newUrlInput = document.getElementById('image-url');
+                var newUrl = newUrlInput.value;
+                var imageId = {{ image.id }};  // Obtener el ID de la imagen desde Flask
+                console.log(newUrl)
+                console.log(imageId)
+                // Enviar la nueva URL al servidor para actualizarla en la base de datos
+                $.post('/update_image_url' , { image_id: imageId, new_url: newUrl }, function(data) {
+                    if (data.success) {
+                        // Actualizar la URL en la página sin recargarla
+                        // $('#update-url-form').replaceWith('<p>URL actualizada: ' + newUrl + '</p>');
+                    } else {
+                        console.error('Error al actualizar la URL de la imagen:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al comunicarse con el servidor:', error);
+                });
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

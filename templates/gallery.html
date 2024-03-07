@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Enlace al archivo CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Enlazar tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Galería de Imágenes</title>
+
+    {% include 'navbar.html' %}
+
+</head>
+<body>
+
+
+    <h1>Galería de Imágenes</h1>
+
+    <!-- Lista de imágenes -->
+    <ul>
+        {% for image in images %}
+            <a href="{{ url_for('show_image', image_id=image.id) }}">
+                <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="{{ image.filename }}"  style="max-width: 300px; max-height: 300px;">
+            </a>
+        {% endfor %}
+    </ul>
+</body>
+</html>
