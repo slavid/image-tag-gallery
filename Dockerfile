@@ -5,6 +5,11 @@ COPY app.py .
 COPY requirements.txt .
 COPY templates ./templates
 
+ENV GID 1000
+ENV UID 1000
+
+USER ${UID}:${GID}
+
 # RUN python3 -m venv .venv
 # RUN . .venv/bin/activate
 
