@@ -1,14 +1,14 @@
 FROM python:3-alpine
 
-WORKDIR /usr/src/app
-COPY app.py .
-COPY requirements.txt .
-COPY templates ./templates
-
 ENV GID 1000
 ENV UID 1000
 
 USER ${UID}:${GID}
+
+WORKDIR /usr/src/app
+COPY app.py .
+COPY requirements.txt .
+COPY templates ./templates
 
 # RUN python3 -m venv .venv
 # RUN . .venv/bin/activate
