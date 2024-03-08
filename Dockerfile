@@ -1,42 +1,23 @@
+# Define the base image
 FROM python:3.12-slim-bookworm
 
-ENV GID 1000
-ENV UID 1000
-ENV USER=docker
-ENV GROUPNAME=$USER
+VOLUME [ "/app" ]
 
-RUN apt-get update \
- && apt-get install -y sudo
+ENV FLASK_APP="/app/app.py"
 
-RUN adduser --disabled-password --gecos '' $USER
-RUN adduser $USER sudo
+WORKDIR /app
 
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+COPY requirements.txt .
 
-WORKDIR /usr/src/app
+RUN pip3 install -r requirements.txt
 
-RUN chown -R $USER:$USER /usr/src/app
+COPY app.py ./app.py
+COPY templates ./templates
+COPY styles.css ./static/css/
 
-COPY --chown=$USER:$USER app.py .
-COPY --chown=$USER:$USER requirements.txt .
-COPY --chown=$USER:$USER templates ./templates
-
-#RUN python3 -m venv .venv
-#RUN . .venv/bin/activate
-
-RUN sudo pip3 install -r requirements.txt
-
-# USER docker
-
-RUN chown -R $USER:$USER /usr/src/app
-
-RUN sudo flask db init
-RUN sudo flask db migrate
-RUN sudo flask db upgrade
-
-RUN chown -R $USER:$USER /usr/src/app
-
-USER $USER
+RUN flask db init
+RUN flask db migrate
+RUN flask db upgrade
 
 EXPOSE 5000
 

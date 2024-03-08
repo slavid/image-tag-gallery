@@ -4,7 +4,6 @@ services:
   image-tag-gallery:
     image: draz1c/image-tag-gallery
     container_name: image-tag-gallery
-    volumes:
-      - './local-asset:/usr/src/app'
-    user: docker
+    ports:
+      - 5000:5000
     restart: always
