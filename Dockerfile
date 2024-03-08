@@ -3,6 +3,9 @@ FROM python:3.12-slim-bookworm
 
 VOLUME [ "/app" ]
 
+RUN apt-get update && apt-get install -y sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
 ENV FLASK_APP="/app/app.py"
 
 WORKDIR /app
@@ -12,7 +15,7 @@ COPY requirements.txt .
 RUN python3 -m venv .venv
 RUN . .venv/bin/activate
 
-RUN pip3 install -r requirements.txt
+RUN sudo pip3 install -r requirements.txt
 
 RUN echo "$(whereis flask)"
 
@@ -20,9 +23,9 @@ COPY app.py ./app.py
 COPY templates ./templates
 COPY styles.css ./static/css/
 
-RUN flask db init
-RUN flask db migrate
-RUN flask db upgrade
+RUN sudo flask db init
+RUN sudo flask db migrate
+RUN sudo flask db upgrade
 
 EXPOSE 5000
 
