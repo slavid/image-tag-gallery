@@ -27,37 +27,37 @@ Manual Installation
 1.  Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/slavid/image-tag-gallery.git
+$ git clone https://github.com/slavid/image-tag-gallery.git
 ```
 
 2.   Navigate to the project directory:
 
 ```bash
-cd image-tag-gallery
+$ cd image-tag-gallery
 ```
 3. Use local virtual environment (venv):
 
 ```bash
-python3 -m venv .venv
-. .venv/bin/activate
+$ python3 -m venv .venv
+$ . .venv/bin/activate
 ```
 4. Install dependencies using pip:
 
 ```bash
-pip3 install -r requirements.txt
+$ pip3 install -r requirements.txt
 ```
 
 5. Init flask database:
 
 ```bash
-flask db init
-flask db migrate
-flask db upgrade
+$ flask db init
+$ flask db migrate
+$ flask db upgrade
 ```
 
 6. Start the application:
 ```bash
-flask run
+$ flask run
 ```
 ---
 
@@ -119,7 +119,9 @@ echo $COMMAND
 Cronjob run under root:
 
 ```bash
-0 3 * * * cp -uR --no-preserve=mode,ownership $(/script/location.sh)/* /backup/folder/location/ && chown -R non-root-user:non-root-user /backup/folder/location/ >/dev/null 2>&1
+0 3 * * * cp -uR --no-preserve=mode,ownership $(/script/location.sh)/* \
+/backup/folder/location/ && chown -R non-root-user:non-root-user \
+/backup/folder/location/ >/dev/null 2>&1
 ```
 
 ## TODO
@@ -129,7 +131,7 @@ Cronjob run under root:
 - [ ] More pleasing interface (I'm definitely not a web designer).
 - [ ] Fix script to find Docker volume to be more consistent.
 - [ ] Chose a catchy project name
-- [ x ] Add some basic CI.
+- [x] Add some basic CI.
 
 Contribution
 ------------
