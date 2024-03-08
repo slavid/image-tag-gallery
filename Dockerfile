@@ -9,7 +9,12 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+RUN python3 -m venv .venv
+RUN . .venv/bin/activate
+
 RUN pip3 install -r requirements.txt
+
+RUN echo "$(whereis flask)"
 
 COPY app.py ./app.py
 COPY templates ./templates
