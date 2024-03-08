@@ -17,8 +17,6 @@ RUN . .venv/bin/activate
 
 RUN sudo pip3 install -r requirements.txt
 
-RUN echo "$(whereis flask)"
-
 COPY app.py ./app.py
 COPY templates ./templates
 COPY styles.css ./static/css/

@@ -2,9 +2,10 @@
 version: "3"
 services:
   image-tag-gallery:
-    # image: draz1c/image-tag-gallery
-    build: .
+    image: draz1c/image-tag-gallery:latest
     container_name: image-tag-gallery
+    volumes:
+      - '/local/backup/of/images/:/app/static/uploads'
     ports:
       - 5000:5000
     restart: always
