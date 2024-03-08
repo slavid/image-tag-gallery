@@ -2,10 +2,7 @@
 
 > Most simple ever self-hosted image gallery that allows to add multiple tags to images when they are uploaded.
 
-![homepage](https://github.com/slavid/image-tag-gallery/main/resources/homepage.png?raw=true)
-<p align="center">
- <img src="https://github.com/slavid/image-tag-gallery/main/resources/homepage.png" width="100%">
-</p>
+![homepage](https://raw.githubusercontent.com/slavid/image-tag-gallery/main/resources/homepage.png)
 
 Features
 --------
