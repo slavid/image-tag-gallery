@@ -116,7 +116,7 @@ COMMAND=$(docker inspect -f '{{ .Mounts }}' image-tag-gallery | awk -F ' ' '{pri
 echo $COMMAND
 ```
 
-Cronjob run under root:
+Cronjob run under root (runs at 3 AM each day):
 
 ```bash
 0 3 * * * cp -uR --no-preserve=mode,ownership $(/script/location.sh)/* \
@@ -131,7 +131,7 @@ Cronjob run under root:
 - [ ] More pleasing interface (I'm definitely not a web designer).
 - [ ] Fix script to find Docker volume to be more consistent.
 - [ ] Chose a catchy project name
-- [x] Add some basic CI.
+- [x] ~~Add some basic CI.~~
 
 Contribution
 ------------
