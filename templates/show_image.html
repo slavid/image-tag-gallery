@@ -19,9 +19,9 @@
     <h1>Imagen Ampliada</h1>
     <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="Imagen Ampliada" style="max-width: 1300px; max-height: 1300px;">
     
-    <form action="{{ url_for('delete_image') }}" method="post">
+    <form id="deleteForm" action="{{ url_for('delete_image') }}" method="post">
         <input type="hidden" name="image_id" value="{{ image.id }}">
-        <button type="submit" class="btn btn-primary">Eliminar imagen</button>
+        <button type="button" class="btn btn-primary" id="deleteImageButton">Eliminar imagen</button>
     </form>
     
     <h2>URL de la Imagen:</h2>
@@ -113,7 +113,15 @@
             });
         });
     </script>
-    
+    <script>
+        document.getElementById('deleteImageButton').addEventListener('click', function() {
+            // Mostrar una ventana emergente de confirmación
+            if (confirm('¿Estás seguro de que quieres eliminar la imagen? Esta acción no se puede deshacer.')) {
+                // Si el usuario confirma, enviar el formulario de eliminación
+                document.getElementById('deleteForm').submit();
+            }
+        });
+        </script>
     
 </body>
 </html>

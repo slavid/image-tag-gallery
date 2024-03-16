@@ -161,10 +161,32 @@ def search_by_multiple_tags():
         
         # Realizar la búsqueda en la base de datos para encontrar imágenes con todos los tags
         images = []
+        # Realiza la búsqueda no restringida
+        images = Image.query.filter(Image.tags.any(Tag.name.in_(tags))).all()
+    else:
+        # Si no se proporcionan tags, mostrar un mensaje de error o redirigir a otra página
+        # Aquí puedes agregar tu lógica según lo que desees hacer en este caso
+        return "No se proporcionaron etiquetas para la búsqueda"
+
+    return render_template('search_results.html', images=images, tags=tags)
+
+# Definimos la nueva ruta para la búsqueda de múltiples tags restrictivo
+@app.route('/search_by_multiple_tags_restrictive', methods=['GET'])
+def search_by_multiple_tags_restrictive():
+    # Obtener los tags especificados por el usuario desde la URL
+    tags_input = request.args.get('tags')
+
+    if tags_input:
+        # Separar los tags por espacios
+        tags = tags_input.split()
+        
+        # Realizar la búsqueda en la base de datos para encontrar imágenes con todos los tags
+        images = []
+        
         for image in Image.query.all():
             image_tags = [image_tag.name for image_tag in image.tags]
             if all(tag in image_tags for tag in tags):
-                images.append(image)
+                images.append(image)     
     else:
         # Si no se proporcionan tags, mostrar un mensaje de error o redirigir a otra página
         # Aquí puedes agregar tu lógica según lo que desees hacer en este caso

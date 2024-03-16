@@ -150,3 +150,4 @@ If you'd like to contribute to this project, please follow these steps:
 | **Date**   | **Version** | **Changes**     |
 |:----------:|:-----------:|:---------------:|
 | 03/08/2024 | 0.1         | Initial release |
+| 03/16/2024 | 0.2         | Added restrictive search button and popup confirmation window upon trying to delete images|
