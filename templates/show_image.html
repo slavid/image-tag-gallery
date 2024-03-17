@@ -8,7 +8,7 @@
     <!-- Enlazar tu archivo CSS personalizado -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    <title>Imagen Ampliada</title>
+    <title>Full image</title>
 
     {% include 'navbar.html' %}
 
@@ -16,32 +16,32 @@
 <body>
 
 
-    <h1>Imagen Ampliada</h1>
+    <h1>Full image</h1>
     <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" alt="Imagen Ampliada" style="max-width: 1300px; max-height: 1300px;">
     
     <form id="deleteForm" action="{{ url_for('delete_image') }}" method="post">
         <input type="hidden" name="image_id" value="{{ image.id }}">
-        <button type="button" class="btn btn-primary" id="deleteImageButton">Eliminar imagen</button>
+        <button type="button" class="btn btn-primary" id="deleteImageButton">Delete image</button>
     </form>
     
-    <h2>URL de la Imagen:</h2>
+    <h2>Image URL:</h2>
     {% if image.url %}
         <form id="update-url-form">
             <input type="text" id="image-url" value="{{ image.url }}">
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
-        <button id="copy-url-btn">Copiar URL</button>
+        <button id="copy-url-btn">Copy URL</button>
     {% else %}
         <form action="{{ url_for('add_url_to_image', image_id=image.id) }}" method="post">
-            <input type="text" name="new_url" placeholder="Introducir URL">
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            <input type="text" name="new_url" placeholder="Add URL">
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
     {% endif %}
 
-    <h2>Añadir Tag:</h2>
+    <h2>Add Tag:</h2>
     <form action="{{ url_for('add_tag_to_image', image_id=image.id) }}" method="post">
-        <input type="text" name="new_tag" placeholder="Nuevo Tag">
-        <button type="submit" class="btn btn-primary">Añadir</button>
+        <input type="text" name="new_tag" placeholder="New Tag">
+        <button type="submit" class="btn btn-primary">Add</button>
     </form>
 
     <h2>Tags:</h2>
@@ -51,7 +51,7 @@
             <a href="{{ url_for('search_by_tag', tag=tag) }}">{{ tag }}</a>
             <span>{{ tag.name }}</span>
             <!-- Botón "x" para eliminar el tag -->
-            <button type="submit" class="btn btn-primary btn-sm delete-tag-btn" data-image-id="{{ image.id }}" data-tag-name="{{ tag }}">Borrar Tag</button>
+            <button type="submit" class="btn btn-primary btn-sm delete-tag-btn" data-image-id="{{ image.id }}" data-tag-name="{{ tag }}">Delete Tag</button>
         </li>
         {% endfor %}
     </ul>
@@ -116,7 +116,7 @@
     <script>
         document.getElementById('deleteImageButton').addEventListener('click', function() {
             // Mostrar una ventana emergente de confirmación
-            if (confirm('¿Estás seguro de que quieres eliminar la imagen? Esta acción no se puede deshacer.')) {
+            if (confirm('Are you sure you want to delete the image? This action cannot be undone.')) {
                 // Si el usuario confirma, enviar el formulario de eliminación
                 document.getElementById('deleteForm').submit();
             }

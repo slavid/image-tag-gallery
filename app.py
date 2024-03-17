@@ -4,7 +4,7 @@ import os, re, random, string, hashlib
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from urllib.parse import quote
 from flask_migrate import Migrate
 #from models import Image, Tag
@@ -428,7 +428,11 @@ def index():
     # Obtener imágenes sin tags
     images_without_tags = [image for image in all_images if not image.tags]
 
-    return render_template('index.html', tags_with_images=tags_with_images, tags_without_images=tags_without_images, images_without_tags=images_without_tags, tag_counts=tag_counts)
+    # Consulta para obtener el número de imágenes únicas asociadas a cada etiqueta
+    subquery = db.session.query(ImageTagAssociation.tag_id, func.count(func.distinct(ImageTagAssociation.image_id)).label('count')).group_by(ImageTagAssociation.tag_id).subquery()
+    tags_with_images_count = db.session.query(Tag, subquery.c.count).outerjoin(subquery, Tag.id == subquery.c.tag_id).order_by(subquery.c.count.desc()).all()
+
+    return render_template('index.html', tags_with_images=tags_with_images, tags_without_images=tags_without_images, images_without_tags=images_without_tags, tag_counts=tag_counts, tags_with_images_count=tags_with_images_count)
 
 if __name__ == '__main__':
     #create_app()

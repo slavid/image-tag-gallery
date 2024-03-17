@@ -17,13 +17,13 @@
     <h1>Search Results</h1>
 
     {% if images %}
-    <h2>Imágenes para los siguientes tags:</h2>
+    <h2>Images matching tags:</h2>
     <ul>
         {% for tag in tags %}
             <a href="{{ url_for('search_by_tag', tag=tag) }}">{{ tag }}</a>
         {% endfor %}
     </ul>
-    <h3>Resultados:</h3>
+    <h3>Results:</h3>
     <ul>
         {% for image in images %}
             <a href="{{ url_for('show_image', image_id=image.id) }}">
@@ -34,7 +34,7 @@
 {% elif error_message %}
     <p>{{ error_message }}</p>
 {% else %}
-    <p>No se proporcionó ningún tag válido.</p>
+    <p>No valid tag.</p>
 {% endif %}
 </body>
 </html>
