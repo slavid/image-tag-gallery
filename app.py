@@ -173,6 +173,8 @@ def upload_file():
             os.makedirs(app.config['UPLOAD_FOLDER'])
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
 
+        filename = file.filename
+
         # Verificar si ya existe un archivo con el mismo nombre
         existing_image = Image.query.filter_by(filename=file.filename).first()
         if existing_image:
