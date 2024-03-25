@@ -127,10 +127,10 @@ Cronjob run under root (runs at 3 AM each day):
 ## TODO
 
 - [ ] Allow bind mount of the app's path: `/app`.
-- [ ] Fix translations (while coding I've mixed Spanish and English everywhere).
 - [ ] More pleasing interface (I'm definitely not a web designer).
 - [ ] Fix script to find Docker volume to be more consistent.
 - [ ] Chose a catchy project name
+- [x] Fix translations (while coding I've mixed Spanish and English everywhere).
 - [x] ~~Add some basic CI.~~
 
 Contribution
@@ -151,3 +151,4 @@ If you'd like to contribute to this project, please follow these steps:
 |:----------:|:-----------:|:---------------:|
 | 03/08/2024 | 0.1         | Initial release |
 | 03/16/2024 | 0.2         | Added restrictive search button and popup confirmation window upon trying to delete images|
+| 03/25/2024 | 0.3         | Allow upload just from URL and random filename if filename already exists |

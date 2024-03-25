@@ -1,17 +1,18 @@
 # app.py
 
-import os, re, random, string, hashlib
+import os, re, random, string, hashlib, requests, io, uuid
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine, func
 from urllib.parse import quote
 from flask_migrate import Migrate
+from werkzeug.utils import secure_filename
 #from models import Image, Tag
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'  # Carpeta donde se almacenarán las imágenes/gifs subidos
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 # Lista de tags (puedes recuperarlos de tu base de datos u otra fuente)
 ##tags = ['wallpaper']
@@ -54,19 +55,119 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
+    if 'file' not in request.files and 'url' not in request.form:
         flash('No se encontró ningún archivo', 'error')
         #return redirect(url_for('index'))
         return redirect(request.url)
     
     file = request.files['file']
 
-    if file.filename == '':
-        flash('No se seleccionó ningún archivo', 'error')
-        #return redirect(url_for('index'))
-        return redirect(request.url)
+    # if file.filename == '':
+    #     flash('No se seleccionó ningún archivo', 'error')
+    #     #return redirect(url_for('index'))
+    #     return redirect(request.url)
     
-    if file and allowed_file(file.filename):
+    # Si se proporciona una URL de imagen
+    if 'url' in request.form and not file:
+        
+        url = request.form['url']
+        #response_test = requests.get(url)
+        #file_test = response_test.content
+
+        # print ("No hay file, se sube por url: ", secure_filename(file_test.filename))
+        if url:
+            try:
+                #print("Intentando descargar la imagen desde la URL...")
+                # Descargar la imagen desde la URL
+                response = requests.get(url)
+                #print ("Status code de la peticion: ", response.status_code)
+                if response.status_code == 200:
+                    #print("La descarga de la imagen fue exitosa.")
+                    image_bytes = io.BytesIO(response.content)
+                    # Guardar la imagen en el sistema de archivos
+                    # filename = secure_filename(os.path.basename(image_url))
+                    # filepath = os.path.join(UPLOAD_FOLDER, filename)
+                    file = response.content
+
+                    filename = os.path.basename(url)
+
+                    #print ("El nombre del archivo es: ", file.filename)
+                    #print ("El nombre del archivo es: ", filename)
+
+                    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                        os.makedirs(app.config['UPLOAD_FOLDER'])
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                    #print ("El file path completo es: ", file_path)
+                    
+                    # Verificar si ya existe un archivo con el mismo nombre
+                    existing_image = Image.query.filter_by(filename=filename).first()
+                    if existing_image:
+                        random_suffix = str(uuid.uuid4())[:8]  # Genera una cadena aleatoria de 8 caracteres
+                        filename = f"{os.path.splitext(filename)[0]}-{random_suffix}{os.path.splitext(filename)[1]}"
+                        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                    #file.save(file_path)
+
+                    with open(file_path, 'wb') as f:
+                        f.write(image_bytes.read())
+
+
+                    # Guardar el hash en la base de datos
+                    image = Image(filename=filename)
+                    #image.hash=file_hash
+                    db.session.add(image)
+                    #print (image.filename)
+                    #print (image.tags)
+                    db.session.commit()
+                    
+                    # print ("El hash es: ", image.hash)
+
+                    url = request.form.get('url')  # Obtener la URL de la imagen si se proporciona
+                    if url:
+                        image.url=url
+                    
+                    # Obtener la entrada de texto del formulario y limpiarla
+                    tags_input = request.form['tags']
+                    cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', tags_input)
+                    # Dividir la entrada de texto en tags por espacios
+                    tags = [tag.strip() for tag in cleaned_input.split()]
+
+                    # Verificar si el archivo es una imagen GIF
+                    if filename.endswith('.gif'):
+                        tags.append('gif')  # Añadir el tag "gif" automáticamente
+
+                    # Procesar los tags
+                    for tag_name in tags:
+                        # Verificar si el tag ya existe en la base de datos
+                        tag = Tag.query.filter_by(name=tag_name).first()
+                        if not tag:
+                            # Crear un nuevo tag si no existe
+                            tag = Tag(name=tag_name)
+                            db.session.add(tag)
+                            db.session.commit()
+
+                        # Verificar si ya existe la relación entre la imagen y el tag
+                        existing_association = ImageTagAssociation.query.filter_by(image_id=image.id, tag_id=tag.id).first()
+                        if not existing_association:
+                            # Crear la relación entre la imagen y el nuevo tag
+                            image_tag = ImageTagAssociation(image_id=image.id, tag_id=tag.id)
+                            db.session.add(image_tag)
+                    
+                    # Guardar todos los cambios en la base de datos al final
+                    db.session.commit()
+
+
+                    # flash('Archivo subido exitosamente.')
+                    return redirect(url_for('index'))
+
+            except Exception as e:
+                # Manejar el error si no se puede descargar la imagen desde la URL
+                #print ("Error", e)
+                flash(f'Error al descargar la imagen desde la URL: {e}')
+                return redirect(request.url)
+    else:
+    # if file and allowed_file(file.filename):
 
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
             os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -75,15 +176,16 @@ def upload_file():
         # Verificar si ya existe un archivo con el mismo nombre
         existing_image = Image.query.filter_by(filename=file.filename).first()
         if existing_image:
-            flash('La imagen ya está subida', 'error')
-            return redirect(request.url)
+            random_suffix = str(uuid.uuid4())[:8]  # Genera una cadena aleatoria de 8 caracteres
+            filename = f"{os.path.splitext(file.filename)[0]}-{random_suffix}{os.path.splitext(file.filename)[1]}"
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
 
         file.save(file_path)
         # print ("Ruta: ", file_path)
 
         # Guardar el hash en la base de datos
-        image = Image(filename=file.filename)
+        image = Image(filename=filename)
         #image.hash=file_hash
         db.session.add(image)
         #print (image.filename)
@@ -103,7 +205,7 @@ def upload_file():
         tags = [tag.strip() for tag in cleaned_input.split()]
 
         # Verificar si el archivo es una imagen GIF
-        if file.filename.endswith('.gif'):
+        if filename.endswith('.gif'):
             tags.append('gif')  # Añadir el tag "gif" automáticamente
 
         # Procesar los tags
