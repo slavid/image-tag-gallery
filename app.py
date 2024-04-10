@@ -128,10 +128,11 @@ def upload_file():
                         image.url=url
                     
                     # Obtener la entrada de texto del formulario y limpiarla
-                    tags_input = request.form['tags']
+                    tags_input = request.form['tags'].lower()
                     cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', tags_input)
                     # Dividir la entrada de texto en tags por espacios
                     tags = [tag.strip() for tag in cleaned_input.split()]
+
 
                     # Verificar si el archivo es una imagen GIF
                     if filename.endswith('.gif'):
@@ -201,7 +202,7 @@ def upload_file():
             image.url=url
         
         # Obtener la entrada de texto del formulario y limpiarla
-        tags_input = request.form['tags']
+        tags_input = request.form['tags'].lower()
         cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', tags_input)
         # Dividir la entrada de texto en tags por espacios
         tags = [tag.strip() for tag in cleaned_input.split()]
@@ -237,7 +238,7 @@ def upload_file():
 @app.route('/search', methods=['GET'])
 def search_by_tag():
     # Obtiene el tag especificado en la URL
-    tag_name = request.args.get('tag')
+    tag_name = request.args.get('tag').lower()
 
     # Verifica si se proporcionó un tag
     if tag_name:
@@ -257,7 +258,7 @@ def search_by_tag():
 @app.route('/search_by_multiple_tags', methods=['GET'])
 def search_by_multiple_tags():
     # Obtener los tags especificados por el usuario desde la URL
-    tags_input = request.args.get('tags')
+    tags_input = request.args.get('tags').lower()
 
     if tags_input:
         # Separar los tags por espacios
@@ -278,7 +279,7 @@ def search_by_multiple_tags():
 @app.route('/search_by_multiple_tags_restrictive', methods=['GET'])
 def search_by_multiple_tags_restrictive():
     # Obtener los tags especificados por el usuario desde la URL
-    tags_input = request.args.get('tags')
+    tags_input = request.args.get('tags').lower()
 
     if tags_input:
         # Separar los tags por espacios
@@ -301,7 +302,7 @@ def search_by_multiple_tags_restrictive():
 @app.route('/delete_tag', methods=['POST'])
 def delete_tag():
     # Obtiene el nombre del tag a eliminar desde el formulario
-    tag_name = request.form.get('tag_name')
+    tag_name = request.form.get('tag_name').lower()
     # print("Deleting tag:", tag_name)  # Impresión para depuración
 
     if tag_name:
@@ -329,7 +330,7 @@ def delete_tag():
 @app.route('/add_tag_to_image/<int:image_id>', methods=['POST'])
 def add_tag_to_image(image_id):
     # Obtener la entrada de texto del formulario y limpiarla
-    new_tags_input = request.form['new_tag']
+    new_tags_input = request.form['new_tag'].lower()
     cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', new_tags_input)
     # Dividir la entrada de texto en tags por espacios
     new_tags = [tag.strip() for tag in cleaned_input.split()]

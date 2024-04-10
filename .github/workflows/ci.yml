@@ -21,6 +21,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Set tag name
+        run: |
+          if [[ ${{ github.ref_type }} == "tag" ]]; then
+            echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          fi
       -
         name: Build and push
         uses: docker/build-push-action@v3
@@ -28,5 +36,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: | 
-            draz1c/image-tag-gallery:v${{ github.event.release.tag_name }}
+            draz1c/image-tag-gallery:${{env.IMAGE_TAG}}
             draz1c/image-tag-gallery:latest
