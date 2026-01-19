@@ -129,7 +129,7 @@ def upload_file():
                     
                     # Obtener la entrada de texto del formulario y limpiarla
                     tags_input = request.form['tags'].lower()
-                    cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', tags_input)
+                    cleaned_input = re.sub(r'[^a-zA-Z0-9ñÑ\s]+', ' ', tags_input)
                     # Dividir la entrada de texto en tags por espacios
                     tags = [tag.strip() for tag in cleaned_input.split()]
 
@@ -203,7 +203,7 @@ def upload_file():
         
         # Obtener la entrada de texto del formulario y limpiarla
         tags_input = request.form['tags'].lower()
-        cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', tags_input)
+        cleaned_input = re.sub(r'[^a-zA-Z0-9ñÑ\s]+', ' ', tags_input)
         # Dividir la entrada de texto en tags por espacios
         tags = [tag.strip() for tag in cleaned_input.split()]
 
@@ -331,7 +331,7 @@ def delete_tag():
 def add_tag_to_image(image_id):
     # Obtener la entrada de texto del formulario y limpiarla
     new_tags_input = request.form['new_tag'].lower()
-    cleaned_input = re.sub(r'[^a-zA-Z0-9\s]+', ' ', new_tags_input)
+    cleaned_input = re.sub(r'[^a-zA-Z0-9ñÑ\s]+', ' ', new_tags_input)
     # Dividir la entrada de texto en tags por espacios
     new_tags = [tag.strip() for tag in cleaned_input.split()]
 
